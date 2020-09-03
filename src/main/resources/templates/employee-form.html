@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Employee Management System</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container my-2">
+    <h1>Employee Management System</h1>
+    <hr>
+    <h2>Save Employee</h2>
+
+    <form action="#" th:action="@{/saveEmployee}" th:object="${employee}" method="POST">
+
+        <!-- Add hidden form field to handle update -->
+        <input type="hidden" th:if="${#httpServletRequest.requestURI.contains('/showFormForUpdate')}" th:field="*{id}">
+
+        <input type="text" th:field="*{name}"
+               placeholder="Employee First Name" class="form-control mb-4 col-4">
+
+        <input type="text" th:field="*{surname}"
+               placeholder="Employee Last Name" class="form-control mb-4 col-4">
+
+        <input type="text" th:field="*{email}"
+               placeholder="Employee Email" class="form-control mb-4 col-4">
+
+        <button type="submit" class="btn btn-info col-2 mb-3">Save Employee</button>
+    </form>
+
+    <a th:href="@{/}">Go to Employee List</a>
+</div>
+
+</body>
+</html>
