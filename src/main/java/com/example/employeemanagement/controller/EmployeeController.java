@@ -3,12 +3,10 @@ package com.example.employeemanagement.controller;
 import com.example.employeemanagement.model.Employee;
 import com.example.employeemanagement.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,12 +16,10 @@ public class EmployeeController {
     @Autowired
     EmployeeService employeeService;
 
+    // display list of employees
     @GetMapping(value = {"/", "/index"})
     public String contextPage(Model model) {
-        List<Employee> allEmployees = employeeService.getAllEmployees();
-        model.addAttribute("allEmployees", allEmployees);
-
-        return "index";
+        return findPaginated(1, "name", "asc" ,model);
     }
 
     @GetMapping(value = "/showNewEmployeeForm")
@@ -58,5 +54,27 @@ public class EmployeeController {
         // call delete employee mothod
         employeeService.deleteEmployee(id);
         return "redirect:/";
+    }
+
+    @GetMapping(value = "/page/{pageNo}")
+    public String findPaginated(@PathVariable("pageNo") int pageNo,
+                                @RequestParam("sortField") String sortField,
+                                @RequestParam("sortDir") String sortDir, Model model) {
+        int pageSize = 2;
+
+        Page<Employee> paginated = employeeService.findPaginated(pageNo, pageSize, sortField, sortDir);
+        List<Employee> listEmployees = paginated.getContent();
+
+        model.addAttribute("currentPage", pageNo);
+        model.addAttribute("totalPages", paginated.getTotalPages());
+        model.addAttribute("totalItems", paginated.getTotalElements());
+
+        model.addAttribute("sortField", sortField);
+        model.addAttribute("sortDir", sortDir);
+        model.addAttribute("reverseSortDir", sortDir.equals("asc") ? "desc" : "asc");
+
+        model.addAttribute("listEmployees", listEmployees);
+
+        return "index";
     }
 }
